@@ -5,6 +5,9 @@ module TinyDefinitions where
                    OrNode ParseTree ParseTree  |
                    NotNode ParseTree           |
                    ValueNode ValueType         |
+                   FirstNode ParseTree         |
+                   SecondNode ParseTree        |
+                   IfNode ParseTree ParseTree ParseTree |
                    IdNode String               |
                    LetNode String ParseTree ParseTree |
                    LambdaNode String ParseTree |
@@ -14,20 +17,21 @@ module TinyDefinitions where
                    MultiplicationNode ParseTree ParseTree |
                    DivisionNode ParseTree ParseTree |
                    RemainderNode ParseTree ParseTree |
+                   EqualsNode ParseTree ParseTree | 
                    EmptyNode
-                    deriving (Show)
+                    deriving (Eq, Show)
   
   -- closure structure
 
   data ClosureStructure = Closure String ParseTree EnvType 
-                          deriving (Show)
+                          deriving (Eq, Show)
 
   -- TODO: Add IntegerType and PairType below
   data ValueType = BoolType Bool | 
                    IntegerType Integer |
-                   PairType ValueType ValueType | -- is this right?
+                   PairType ParseTree ParseTree |
                    ClosureType ClosureStructure
-                     deriving (Show)
+                     deriving (Eq, Show)
   
 
 

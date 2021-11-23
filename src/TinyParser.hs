@@ -9,16 +9,18 @@ import TinyDefinitions
 import TinyLexer
 
 import MonadicParserLibrary
-import Control.Applicative 
+import Control.Applicative
+
+
 
 -- parseString
 --   Consume a string containing a Tiny Language program 
 --   Produce a structure representing the parse tree of the program 
 -- parseString :: String -> [(ParseTree,String)]
-parseString :: String -> ParseTree 
+parseString :: String -> ParseTree
 parseString program = let [(tree,remainingChars)] = parse expressionParser program
                           in
-                             case remainingChars of 
+                             case remainingChars of
                                   "" -> tree
                                   _ -> error ("Parse Error: " ++ remainingChars)
 
@@ -27,41 +29,92 @@ parseString program = let [(tree,remainingChars)] = parse expressionParser progr
 --     The parser will produce a ParseTree representing the 
 --         program 
 
--- TODO: Most of the expression forms below are missing ( ).
-
-expressionParser :: Parser ParseTree  
-expressionParser = do boolExpr <- boolLevelOne   
-                      return boolExpr 
+expressionParser :: Parser ParseTree
+                    -- bool literals, bool expressions, math literals, math expressions
+expressionParser = 
+                   do operatorLevelOne
                     <|>
-                   do mathExpr <- mathLevelOne
-                      return mathExpr
+                    -- pair, tested, works as far as I can test for now
+                   do leftParenthesis
+                      pairKeyword
+                      expr1 <- expressionParser
+                      expr2 <- expressionParser
+                      rightParenthesis
+                      return (ValueNode (PairType expr1 expr2))
                     <|>
--- TODO: Add parsing for a Pair value here (i.e. (pair expression expression) )
-                    -- <|> 
-                   do letKeyword
+                    -- let identifier be expression in expression
+                   do leftParenthesis
+                      letKeyword
                       i <- ident
-                      equalKeyword
-                      expr <- expressionParser 
+                      beKeyword
+                      expr <- expressionParser
+                      inKeyword
+                      -- leftParenthesis
+                      body <- expressionParser -- it sees the x and has no idea what to do
+                      -- rightParenthesis
+                      rightParenthesis
+                      return (LetNode i expr body)
+                    <|>
+                    -- Lambda (I think this is right), untested
+                   do leftParenthesis
+                      lambdaKeyword
+                      paramater <- ident
                       inKeyword
                       body <- expressionParser
-                      return (LetNode i expr body)
-                    <|> 
--- TODO: Add parsing for a lambda expression here
-                    -- <|>
-                   do callKeyword
+                      rightParenthesis
+                      return (LambdaNode paramater body)
+                    <|>
+                    -- call, untested
+                   do leftParenthesis
+                      callKeyword
                       i <- ident
+                      withKeyword
                       body <- expressionParser
+                      rightParenthesis
                       return (CallNode i body)
+                    <|>
+                    --if, untested
+                   do leftParenthesis
+                      ifKeyword
+                      cond <- expressionParser
+                      thenKeyword
+                      expr1 <- expressionParser
+                      elseKeyword
+                      expr2 <- expressionParser
+                      rightParenthesis
+                      return (IfNode cond expr1 expr2)
+                    <|>
+                   do i <- ident
+                      return (IdNode i)
+                    <|>
+                   do leftParenthesis
+                      firstKeyword
+                      expr <- expressionParser
+                      rightParenthesis
+                      return (FirstNode expr)
+                    <|>
+                   do leftParenthesis
+                      secondKeyword
+                      expr <- expressionParser
+                      rightParenthesis
+                      return (SecondNode expr)
+                    <|>
+                   do leftParenthesis
+                      expr1 <- expressionParser
+                      equalsKeyword
+                      expr2 <- expressionParser
+                      rightParenthesis
+                      return (EqualsNode expr1 expr2)
 
 -- Lowest level of precedence of Boolean Expressions 
 --    This handles the boolean or operation
-boolLevelOne :: Parser ParseTree 
+boolLevelOne :: Parser ParseTree
 boolLevelOne = do exprOne <- boolLevelTwo
                   do op <- orOp
-                     exprTwo <- expressionParser 
+                     exprTwo <- expressionParser
                      return (OrNode exprOne exprTwo)
                     <|>
-                     return exprOne 
+                     return exprOne
 
 -- Second level of precedence of Boolean Expressions
 --    This handles the boolean and operation 
@@ -73,12 +126,8 @@ boolLevelTwo = do exprOne <- boolLevelThree
                     <|>
                      return exprOne
 
--- TODO: Add parsing for the second level of boolean precedence. This level
---       only contains andOp. This is called by boolLevelOne and should call
---       boolLevelThree below.
-
 -- Third level of precedence of Boolean Expressions
---     This handles the boolean not operation
+--     This handles the boolean not operation and parenthesis
 boolLevelThree :: Parser ParseTree
 boolLevelThree = do op <- notOp
                     expr <- expressionParser
@@ -89,8 +138,10 @@ boolLevelThree = do op <- notOp
                     rightParenthesis
                     return expr
                   <|>
-                 do b <- boolConst 
-                    return b     
+                 do boolConst
+                  <|>
+                 do i <- ident
+                    return (IdNode i)
 
 -- Lowest level of precedence of Math Expressions 
 --    This handles the math add and subtract operations
@@ -99,28 +150,31 @@ boolLevelThree = do op <- notOp
 mathLevelOne :: Parser ParseTree
 mathLevelOne = do exprOne <- mathLevelTwo
                   do op <- addOp
-                     exprTwo <- expressionParser 
+                     exprTwo <- expressionParser
                      return (AdditionNode exprOne exprTwo)
                    <|> do op <- subtractOp
                           exprTwo <- expressionParser
-                          return (SubtractionNode exprOne exprTwo) 
+                          return (SubtractionNode exprOne exprTwo)
                    <|>
                      return exprOne
-                  
+
 
 -- Lowest level of precedence of Math Expressions 
 --    This handles the math multiplication, division and remainder operations
-mathLevelTwo :: Parser ParseTree 
+mathLevelTwo :: Parser ParseTree
 mathLevelTwo = do exprOne <- mathLevelThree
                   do op <- multiplyOp
-                     exprTwo <- expressionParser 
+                     exprTwo <- expressionParser
                      return (MultiplicationNode exprOne exprTwo)
                    <|> do op <- divideOp
                           exprTwo <- expressionParser
-                          return (DivisionNode exprOne exprTwo) 
+                          return (DivisionNode exprOne exprTwo) -- TODO Remainder
                    <|>
                      return exprOne
-    
+                -- <|> 
+                 -- do i <- ident
+                    -- return (IdNode i)
+
 -- Third level of precedence of Math Expressions
 --     This handles parenthesis
 mathLevelThree :: Parser ParseTree
@@ -128,5 +182,59 @@ mathLevelThree = do leftParenthesis
                     expr <- expressionParser
                     rightParenthesis
                     return expr
-                  <|> do num <- integerConst  
-                         return num
+                  <|>
+                  do num <- integerConst
+                     return num
+                  -- <|> 
+                  -- do i <- ident
+                     -- return (IdNode i)
+
+operatorLevelOne :: Parser ParseTree
+operatorLevelOne = do exprOne <- operatorLevelTwo
+                      do op <- addOp
+                         exprTwo <- expressionParser
+                         return (AdditionNode exprOne exprTwo)
+                       <|> do op <- subtractOp
+                              exprTwo <- expressionParser
+                              return (SubtractionNode exprOne exprTwo)
+                       <|> do op <- orOp
+                              exprTwo <- expressionParser
+                              return (OrNode exprOne exprTwo)
+                       <|>
+                        return exprOne
+
+operatorLevelTwo :: Parser ParseTree
+operatorLevelTwo = do exprOne <- operatorLevelThree
+                      do op <- multiplyOp
+                         exprTwo <- expressionParser
+                         return (MultiplicationNode exprOne exprTwo)
+                       <|> do op <- divideOp
+                              exprTwo <- expressionParser
+                              return (DivisionNode exprOne exprTwo) -- TODO Remainder
+                       <|> do op <- remainderOp
+                              exprTwo <- expressionParser
+                              return (RemainderNode exprOne exprTwo)
+                       <|> do op <- andOp
+                              exprTwo <- expressionParser
+                              return (AndNode exprOne exprTwo)
+                       <|>
+                        return exprOne
+
+operatorLevelThree :: Parser ParseTree
+operatorLevelThree = do op <- notOp
+                        expr <- expressionParser
+                        return (NotNode expr)
+                     <|>
+                     do leftParenthesis
+                        expr <- expressionParser
+                        rightParenthesis
+                        return expr
+                     <|>
+                     do boolConst
+                     <|>
+                     do integerConst
+                     <|>
+                     do i <- ident
+                        return (IdNode i)
+
+                  

@@ -44,19 +44,19 @@ rightParenthesis = symbol ")"
 -- TODO: Add parser definitions for addOp, subtractOp, multiplyOp
 --           divideOp, and remainderOp
 addOp :: Parser String
-addOp = symbol "+"
+addOp = symbol "add"
 
 subtractOp :: Parser String
-subtractOp = symbol "-"
+subtractOp = symbol "subtract"
 
 multiplyOp :: Parser String
-multiplyOp = symbol "*"
+multiplyOp = symbol "multiply"
 
 divideOp :: Parser String
-divideOp = symbol "/"
+divideOp = symbol "divide"
 
 remainderOp :: Parser String
-remainderOp = symbol "%"
+remainderOp = symbol "remainder"
 
 
 mathOp :: Parser String
@@ -70,8 +70,8 @@ integerConst :: Parser ParseTree
 integerConst = do num <- integer
                   return (ValueNode (IntegerType num))
 
-equalKeyword :: Parser String
-equalKeyword = symbol "equals"
+equalsKeyword :: Parser String
+equalsKeyword = symbol "equals"
 
 callKeyword :: Parser String
 callKeyword = symbol "call"
@@ -84,6 +84,32 @@ lambdaKeyword = symbol "lambda"
 
 letKeyword :: Parser String
 letKeyword = symbol "let"
+
+
+pairKeyword :: Parser String
+pairKeyword = symbol "pair"
+
+firstKeyword :: Parser String
+firstKeyword = symbol "first"
+
+secondKeyword :: Parser String
+secondKeyword = symbol "second"
+
+beKeyword :: Parser String
+beKeyword = symbol "be"
+
+ifKeyword :: Parser String
+ifKeyword = symbol "if"
+
+thenKeyword :: Parser String
+thenKeyword = symbol "then"
+
+elseKeyword :: Parser String
+elseKeyword = symbol "else"
+
+withKeyword :: Parser String
+withKeyword = symbol "with"
+
 
 
 

@@ -1,0 +1,40 @@
+
+
+Format:
+"Input"
+expected result
+Pass/Fail
+
+"1"
+IntegerType 1
+Pass
+
+"(1 add 2)"
+IntegerType 3
+Pass
+
+"true"
+BoolType true
+Pass
+
+"(let x be 6 in (x add 1))"
+IntegerType 7
+Fail
+
+"(let x be true in (x and false))"
+BoolType false
+Pass
+
+"(let f be (lambda n in (if (n equals 0) then 1 else (call f with ((n subtract 1) multiply n)))) in (call f with 10))"
+
+"(let f be (lambda n in (if (n equals 1) then 3 else (call f with 1))) in (call f with 2))"
+
+"(let f be (lambda n in (if (n equals 0) then 0 else (call f with 0))) in (call f with 0))"
+
+"(let f be (lambda n in (if (n equals 10) then 1 else ((call f with (1 add n)) multiply n))) in (call f with 1))"
+
+"(let f be (lambda n in (if (n equals 4) then n else (call f with (1 add n)))) in (call f with 1))"
+
+(let f be (lambda n in (if (n equals 0) then 1 else (n multiply (call f with (n subtract 1)))) in (call f with 100))
+
+"(let f be (lambda n in (if (n equals 0) then 1 else (n multiply (call f with (n subtract 1))))) in (call f with 10))"

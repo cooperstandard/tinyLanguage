@@ -38,6 +38,7 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , hspec
   default-language: Haskell2010
 
 executable TinyLanguageProject-exe
@@ -50,6 +51,7 @@ executable TinyLanguageProject-exe
   build-depends:
       TinyLanguageProject
     , base >=4.7 && <5
+    , hspec
   default-language: Haskell2010
 
 test-suite TinyLanguageProject-test
@@ -63,4 +65,5 @@ test-suite TinyLanguageProject-test
   build-depends:
       TinyLanguageProject
     , base >=4.7 && <5
+    , hspec
   default-language: Haskell2010
