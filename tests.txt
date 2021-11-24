@@ -37,4 +37,12 @@ Pass
 
 (let f be (lambda n in (if (n equals 0) then 1 else (n multiply (call f with (n subtract 1)))) in (call f with 100))
 
-"(let f be (lambda n in (if (n equals 0) then 1 else (n multiply (call f with (n subtract 1))))) in (call f with 10))"
+"(let f be (lambda n in (if (n equals 0) then 1 else (n multiply (call f with (n subtract 1))))) in (call f with 100))"
+
+
+-- Tests all bool operations, should return true
+"((true or false) and ((not false) and (false equals false)))"
+
+-- Tests all math operations, should return -4
+"(((16 multiply 42) divide 7) subtract (96 add (13 remainder 9)))"
+
