@@ -30,11 +30,10 @@ parseString program = let [(tree,remainingChars)] = parse expressionParser progr
 --         program 
 
 expressionParser :: Parser ParseTree
-                    -- bool literals, bool expressions, math literals, math expressions
-expressionParser = 
+expressionParser =  -- bool literals, bool expressions, math literals, math expressions
                    do operatorLevelOne
                     <|>
-                    -- pair, tested, works as far as I can test for now
+                    -- pair
                    do leftParenthesis
                       pairKeyword
                       expr1 <- expressionParser
@@ -49,13 +48,11 @@ expressionParser =
                       beKeyword
                       expr <- expressionParser
                       inKeyword
-                      -- leftParenthesis
-                      body <- expressionParser -- it sees the x and has no idea what to do
-                      -- rightParenthesis
+                      body <- expressionParser
                       rightParenthesis
                       return (LetNode i expr body)
                     <|>
-                    -- Lambda (I think this is right), untested
+                    -- Lambda identifier in body
                    do leftParenthesis
                       lambdaKeyword
                       paramater <- ident
@@ -64,7 +61,7 @@ expressionParser =
                       rightParenthesis
                       return (LambdaNode paramater body)
                     <|>
-                    -- call, untested
+                    -- call identifier with expression
                    do leftParenthesis
                       callKeyword
                       i <- ident
@@ -73,7 +70,7 @@ expressionParser =
                       rightParenthesis
                       return (CallNode i body)
                     <|>
-                    --if, untested
+                    --if conditional then expression else expression
                    do leftParenthesis
                       ifKeyword
                       cond <- expressionParser
@@ -84,21 +81,25 @@ expressionParser =
                       rightParenthesis
                       return (IfNode cond expr1 expr2)
                     <|>
+                    -- identifier
                    do i <- ident
                       return (IdNode i)
                     <|>
+                    -- first pairNode
                    do leftParenthesis
                       firstKeyword
                       expr <- expressionParser
                       rightParenthesis
                       return (FirstNode expr)
                     <|>
+                    -- second pairNode
                    do leftParenthesis
                       secondKeyword
                       expr <- expressionParser
                       rightParenthesis
                       return (SecondNode expr)
                     <|>
+                    -- expression equals expression
                    do leftParenthesis
                       expr1 <- expressionParser
                       equalsKeyword
@@ -128,7 +129,7 @@ operatorLevelTwo = do exprOne <- operatorLevelThree
                          return (MultiplicationNode exprOne exprTwo)
                        <|> do op <- divideOp
                               exprTwo <- expressionParser
-                              return (DivisionNode exprOne exprTwo) -- TODO Remainder
+                              return (DivisionNode exprOne exprTwo) --DONE: Remainder
                        <|> do op <- remainderOp
                               exprTwo <- expressionParser
                               return (RemainderNode exprOne exprTwo)

@@ -13,6 +13,8 @@ import TinyDefinitions
 compileAndRun :: String -> ValueType
 compileAndRun program = evaluate (parseString program) emptyEnv
 
+
+
 compileAndRunFile :: String -> IO ValueType
 compileAndRunFile path = do program <- readFile path
                             return (evaluate (parseString program) emptyEnv)
@@ -25,8 +27,8 @@ evaluate tree env = case tree of
                       (ValueNode (BoolType val)) -> BoolType val
                       (ValueNode (ClosureType val)) -> ClosureType val
                       (ValueNode (IntegerType val)) -> IntegerType val
-                      (ValueNode (PairType val1 val2)) -> PairType (ValueNode (evaluate val1 env)) (ValueNode (evaluate val2 env)) -- TODO: I think this is right
--- TODO: Add ValueNode which contains PairType
+                      (ValueNode (PairType val1 val2)) -> PairType (ValueNode (evaluate val1 env)) (ValueNode (evaluate val2 env))
+-- DONE: Add ValueNode which contains PairType
                       (IdNode var) -> applyEnv var env
                       (NotNode val) -> let param = evaluate val env
                                        in
@@ -82,7 +84,6 @@ evaluate tree env = case tree of
                                 case result of
                                     ClosureType (Closure paramName functionBody functionEnv) ->
                                          evaluate functionBody (extendEnv (paramName, evaluate expr env) env)
-                                              --(extendEnv (functionName, result) (extendEnv (paramName, (evaluate expr env)) functionEnv)))
                                     _ -> error "Illegal function call"
                       (FirstNode tuple) -> let PairType (ValueNode val) _ = evaluate tuple env
                                                                           in
@@ -94,8 +95,8 @@ evaluate tree env = case tree of
                                                                               in
                                                                                 (if statement
                                                                                   then evaluate val1 env
-                                                                                  else evaluate val2 env) -- ifnode
-                      (EqualsNode valOne valTwo) -> let val1 = evaluate valOne env --Only have cases for integers and bools, assumes both are the same type
+                                                                                  else evaluate val2 env)
+                      (EqualsNode valOne valTwo) -> let val1 = evaluate valOne env
                                                         in
                                                           case val1 of
                                                                IntegerType num -> let IntegerType val2 = evaluate valTwo env

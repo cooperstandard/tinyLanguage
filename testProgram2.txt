@@ -1,5 +1,0 @@
-(let f be (lambda n in 
-                    (if (n equals 0) 
-                        then 1 
-                        else (n multiply (call f with (n subtract 1)))))
-     in (call f with 100))

@@ -1,6 +1,6 @@
 module TinyDefinitions where
 
-  -- TODO: Add Nodes for Addition, Subtraction, Multiplication, Division, Remainder
+  -- DONE: Add Nodes for Addition, Subtraction, Multiplication, Division, Remainder
   data ParseTree = AndNode ParseTree ParseTree |
                    OrNode ParseTree ParseTree  |
                    NotNode ParseTree           |
@@ -26,7 +26,7 @@ module TinyDefinitions where
   data ClosureStructure = Closure String ParseTree EnvType 
                           deriving (Eq, Show)
 
-  -- TODO: Add IntegerType and PairType below
+  -- DONE: Add IntegerType and PairType below
   data ValueType = BoolType Bool | 
                    IntegerType Integer |
                    PairType ParseTree ParseTree |

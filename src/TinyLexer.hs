@@ -34,14 +34,14 @@ boolOp = do andOp
            <|> orOp
            <|> notOp 
 
--- TODO: Add parser definitions for leftParenthesis and rightParenthesis
+-- DONE: Add parser definitions for leftParenthesis and rightParenthesis
 leftParenthesis :: Parser String
 leftParenthesis = symbol "("
 
 rightParenthesis :: Parser String
 rightParenthesis = symbol ")"
 
--- TODO: Add parser definitions for addOp, subtractOp, multiplyOp
+-- DONE: Add parser definitions for addOp, subtractOp, multiplyOp
 --           divideOp, and remainderOp
 addOp :: Parser String
 addOp = symbol "add"
