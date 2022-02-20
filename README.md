@@ -49,7 +49,7 @@ Execute functions like so `(call <function identifier> with <value>)`. All funct
 
 The `in` keyword defines the scope of an identifier. For example: "`(let x be 4 in (x add 2))`" or "`(lambda fn in (true or false))`"
 
-For a more detailed understanding of the parsing and execution enironment feel free to read through `TinyParser.hs` and `TinyEvaluator.hs` or look through the example programs in `ExamplePrograms.txt` or the tests in `test/Spect.hs`.
+For a more detailed understanding of the parsing and execution enironment feel free to read through `TinyParser.hs` and `TinyEvaluator.hs` or look through the example programs in `ExamplePrograms.txt` or the tests in `test/Spec.hs`.
 
 
 
