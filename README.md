@@ -47,7 +47,9 @@ Functions are defined with the `lambda` keyword. The syntax is `(lambda <identif
 
 Execute functions like so `(call <function identifier> with <value>)`. All functions need to have one arguement, but that arguement does not have to be used in the function body. Recursion is easy to produce with this syntax, loops are more verbose. Here is an example of code to produce the factorial of 10 using recursion: "`(let f be (lambda n in (if (n equals 0) then 1 else (n multiply (call f with (n subtract 1))))) in (call f with 10))`". Notice how you are able to reference the identifier `f` within it's own function definition, this is because when `f` is evaluated its scope has already been extended to include that identifier. This is one of the benefits of how functions are defined. The environment is extended before execution of the expression after `in`, that way constructs can be self referential if necessary. 
 
-For a more detailed understanding of the parsing and execution enironment feel free to read through `TinyParser.hs` and `TinyEvaluator.hs`
+The `in` keyword defines the scope of an identifier. For example: "`(let x be 4 in (x add 2))`" or "`(lambda fn in (true or false))`"
+
+For a more detailed understanding of the parsing and execution enironment feel free to read through `TinyParser.hs` and `TinyEvaluator.hs` or look through the example programs in `ExamplePrograms.txt` or the tests in `test/Spect.hs`.
 
 
 
